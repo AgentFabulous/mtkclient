@@ -863,15 +863,17 @@ class DAXFlash(metaclass=LogBase):
                 # bootmode 0: shutdown 1: home screen, 2: fastboot
                 if async_mode or dl_bit or bootmode > 0:
                     hasflags = 1
-                enablewdt = 0  # Disable wdt
-                dont_resetrtc = 0  # Reset RTC
-                leaveusb = 0  # Disconnect usb
-                if self.xsend(pack("<IIIIIIII", hasflags, enablewdt, async_mode, bootmode, dl_bit,
-                                   dont_resetrtc, leaveusb, 0)):
-                    status = self.status()
-                    if status == 0:
-                        self.mtk.port.close(reset=True)
-                        return True
+                enablewdt = 0x0bb8  # Disable wdt
+                # dont_resetrtc = 0  # Reset RTC
+                # leaveusb = 0  # Disconnect usb
+                if self.xsend(pack("<IIII", hasflags, enablewdt, async_mode, bootmode)):
+                    try:
+                        status = self.status()
+                        if status == 0:
+                            self.mtk.port.close(reset=True)
+                            return True
+                    except Exception:
+                        self.info("Unable to read status, device has probably shutdown.")
             else:
                 self.error(f"Error on sending shutdown: {self.eh.status(status)}")
         self.mtk.port.close(reset=True)

@@ -761,7 +761,7 @@ class DA_handler(metaclass=LogBase):
                 os.remove(".state")
                 if os.path.exists(os.path.join("logs", "hwparam.json")):
                     os.remove(os.path.join("logs", "hwparam.json"))
-            mtk.daloader.shutdown(bootmode=0)
+            mtk.daloader.shutdown(bootmode=1)
             print("Reset command was sent. Disconnect usb cable to power off.")
         elif cmd == "da":
             subcmd = args.subcmd
